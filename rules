@@ -1,0 +1,185 @@
+#!/usr/bin/python3
+# COMP3311 21T3 Ass2 ... print list of rules for a program or stream
+# by Samuel Thorley (z5257239)
+
+import sys
+import psycopg2
+import re
+from helpers import getProgram, getStream, getOrgUnit, getProgRules, getStreamRules, getSubjectName, getStreamRulesByCode
+
+### Helper Functions:
+
+# Given ID of an OrgUnit prints formatted line
+def printOrgUnit(id):
+  progOfferedByInfo = getOrgUnit(db, id)
+  if not progOfferedByInfo:
+    print(f"Invalid OrgUnit {progInfo[4]}")
+    exit()
+  progOfferedBy = progOfferedByInfo[3]
+  print(f"- offered by {progOfferedBy}")
+
+# Given code of a major outputs formatted line
+def printMajorName(code):
+  majorInfo = getStream(db, major)
+  if not majorInfo:
+    majorName = "???"
+  else:
+    majorName = majorInfo[2]
+  print(f"- {major} {majorName}")
+
+# Given code of a subject outputs formatted line
+def printSubjectName(code):
+  matchObj = re.match(r'\{(.*);(.*)\}', code)
+  if matchObj:
+    subject1 = matchObj.group(1)
+    subject2 = matchObj.group(2)
+    subjectName1 = getSubjectName(db, subject1)
+    subjectName2 = getSubjectName(db, subject2)
+    print(f"- {subject1} {subjectName1}")
+    print(f"  or {subject2} {subjectName2}")
+  else:
+    subjectName = getSubjectName(db, subject)
+    print(f"- {subject} {subjectName}")
+
+### Set up some globals
+
+usage = f"Usage: {sys.argv[0]} (ProgramCode|StreamCode)"
+db = None
+
+### Process command-line args
+
+argc = len(sys.argv)
+if argc < 2:
+  print(usage)
+  exit(1)
+code = sys.argv[1]
+if len(code) == 4:
+  codeOf = "program"
+elif len(code) == 6:
+  codeOf = "stream"
+
+try:
+  db = psycopg2.connect("dbname=mymyunsw")
+  if codeOf == "program":
+    progInfo = getProgram(db,code)
+    if not progInfo:
+      print(f"Invalid program code {code}")
+      exit()
+
+    # Extract and print program header info
+    progName = progInfo[2]
+    progUoc = progInfo[3]
+    orgUnitId = progInfo[4]
+    progDuration = progInfo[6] / 12
+    print(f"{code} {progName}, {progUoc} UOC, {progDuration} years")
+    printOrgUnit(orgUnitId)
+    print("Academic Requirements:")
+
+    # Extract and print program rules
+    progRulesInfoList = getProgRules(db, code)
+    for rule in progRulesInfoList:
+      ruleType = rule[4]
+      ruleDef = rule[13]
+      ruleName = rule[3]
+      ruleMinReq = rule[5]
+      ruleMaxReq = rule[6]
+
+      # Handle rules of type 'Done Stream' (Assumes only at most 1 stream)
+      if ruleType == "DS":
+        print(f"1 stream(s) from {ruleName}")
+        majors = ruleDef.split(",")
+        for major in majors:
+          printMajorName(major)
+      
+      # Handle rule of type 'Core Courses'
+      elif ruleType == "CC":
+        subjects = ruleDef.split(",")
+        if len(subjects) <= 1:
+          print(ruleName)
+        else:
+          print(f"all courses from {ruleName}")
+        for subject in subjects:
+          printSubjectName(subject)
+      
+      # Handle rule of type 'General Education'
+      elif ruleType == "GE":
+        print(f"{ruleMinReq} UOC of {ruleName}")
+
+      # Handle rules of type 'Prescribed Electives'
+      if ruleType == "PE":
+        if not ruleMinReq:
+          print(f"up to {ruleMaxReq} UOC courses from {ruleName}")
+        elif ruleMinReq == ruleMaxReq:
+          print(f"{ruleMinReq} UOC courses from {ruleName}")
+        else:
+          print(f"between {ruleMinReq} and {ruleMaxReq} UOC courses from {ruleName}")
+        if rule[12] == "pattern":
+          print (f"- courses matching {ruleDef}")
+        else:
+          subjects = ruleDef.split(",")
+          for subject in subjects:
+            printSubjectName(subject)
+
+
+  elif codeOf == "stream":
+    strmInfo = getStream(db,code)
+    if not strmInfo:
+      print(f"Invalid stream code {code}")
+      exit()
+    streamId = strmInfo[0]
+    streamName = strmInfo[2]
+    orgUnitId = strmInfo[3]
+    print(f"{code} {streamName}")
+    printOrgUnit(orgUnitId)
+    print("Academic Requirements:")
+
+    # Extract and Print Stream Rules
+    strmRulesInfoList = getStreamRules(db, streamId)
+    for rule in strmRulesInfoList:
+      ruleType = rule[4]
+      ruleDef = rule[13]
+      ruleName = rule[3]
+      ruleMinReq = rule[5]
+      ruleMaxReq = rule[6]
+    
+      # Handle rules of type 'Core Courses'
+      if ruleType == "CC":
+        subjects = ruleDef.split(",")
+        if len(subjects) <= 1:
+          print(ruleName)
+        else:
+          print(f"all courses from {ruleName}")
+        for subject in subjects:
+          printSubjectName(subject)
+      
+      # Handle rules of type 'Prescribed Electives'
+      if ruleType == "PE":
+        if not ruleMaxReq:
+          print(f"at least {ruleMinReq} UOC courses from {ruleName}")
+        elif not ruleMinReq:
+          print(f"up to {ruleMaxReq} UOC courses from {ruleName}")
+        elif ruleMinReq == ruleMaxReq:
+          print(f"{ruleMinReq} UOC courses from {ruleName}")
+        else:
+          print(f"between {ruleMinReq} and {ruleMaxReq} UOC courses from {ruleName}")
+        if rule[12] == "pattern":
+          print (f"- courses matching {ruleDef}")
+        else:
+          subjects = ruleDef.split(",")
+          for subject in subjects:
+            printSubjectName(subject)
+        
+      # Handle rules of type 'Free Electives'
+      if ruleType == "FE":
+        if not ruleMaxReq:
+          print(f"at least {ruleMinReq} UOC of Free Electives")
+        elif ruleMinReq == ruleMaxReq:
+          print(f"{ruleMinReq} UOC of Free Electives")
+        else:
+          print(f"between {ruleMinReq} and {ruleMaxReq} UOC courses of Free Electives")
+
+except Exception as err:
+  print(err)
+finally:
+  if db:
+    db.close()

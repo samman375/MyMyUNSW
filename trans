@@ -1,0 +1,90 @@
+#!/usr/bin/python3
+# COMP3311 21T3 Ass2 ... print a transcript for a given student
+# by Samuel Thorley (z5257239)
+
+import sys
+import psycopg2
+import re
+from helpers import getStudent, getCourseMarks
+
+### Set up some globals
+
+usage = f"Usage: {sys.argv[0]} zID"
+db = None
+
+### Process command-line args
+
+argc = len(sys.argv)
+if argc < 2:
+  print(usage)
+  exit(1)
+zid = sys.argv[1]
+if zid[0] == 'z':
+  zid = zid[1:8]
+digits = re.compile("^\d{7}$")
+if not digits.match(zid):
+  print(f"Invalid student ID {zid}")
+  exit(1)
+
+# Manipulate database
+
+try:
+  db = psycopg2.connect("dbname=mymyunsw")
+  stuInfo = getStudent(db,zid)
+  if not stuInfo:
+    print(f"Invalid student ID {zid}")
+    exit()
+
+  # Print transcript for Student
+  zId = stuInfo[0]
+  lastName = stuInfo[1]
+  firstName = stuInfo[2]
+  print(f"{zId} {lastName}, {firstName}")
+  courseMarks = getCourseMarks(db, zId)
+  totalWeightedMark = 0
+  totalAttemptedUOC = 0
+  totalCompletedUOC = 0
+
+  for courseMark in courseMarks:
+    code = courseMark[0]
+    term = courseMark [1]
+    courseName = courseMark[2]
+    mark = courseMark[3]
+    grade = courseMark[4]
+    uoc = courseMark[5]
+
+    # Deal with cases by grade
+    if grade == "AF":
+      totalAttemptedUOC += uoc
+      mark = "-"
+      uoc = "fail"
+    elif grade == "FL" or grade == "UF":
+      totalWeightedMark += mark * uoc
+      totalAttemptedUOC += uoc
+      uoc = "fail"
+    elif grade == "HD" or grade == "DN" or grade == "CR" or grade == "PS":
+      totalWeightedMark += mark * uoc
+      totalAttemptedUOC += uoc
+      totalCompletedUOC += uoc
+    elif grade == "XE" or grade == "T" or grade == "SY" or grade == "EC" or grade == "NC":
+      totalCompletedUOC += uoc
+      mark = "-"
+    else:
+      mark = "-"
+      uoc = ""
+    
+    mark = str(mark).rjust(3)
+    if not isinstance(uoc, int):
+      print(f"{code} {term} {courseName:<32s}{mark} {grade:2s}   {uoc}")
+    else:
+      print(f"{code} {term} {courseName:<32s}{mark} {grade:2s}  {uoc:2d}uoc")
+  
+  wam = totalWeightedMark / totalAttemptedUOC
+  print(f"UOC = {totalCompletedUOC}, WAM = {wam:.1f}")
+
+except Exception as err:
+  print("DB error: ", err)
+finally:
+  if db:
+    db.close()
+

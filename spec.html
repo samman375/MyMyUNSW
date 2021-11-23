@@ -1,0 +1,532 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>COMP3311 21T3 - Assignment 2</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+<link rel='stylesheet' type='text/css' href='https://www.cse.unsw.edu.au/~cs3311/21T3//course.css'>
+</head>
+<body>
+<div class="container"></head>
+<body>
+<div align='center'>
+<table width='100%' border='0'>
+<tr valign='top'>
+<td align='left' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">COMP3311 21T3</a></span>
+</td>
+<td align='center' width='50%'>
+  <span class='heading'>Assignment 2</span><br>
+  <span class='subheading'>Python, PostgreSQL, MyMyUNSW</span>
+</td>
+<td align='right' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">Database Systems</a></span>
+</td>
+</table>
+</div><div style="text-align:center;font-size:80%;color:#555555;margin-top:5px;">
+Last updated: <b>Saturday 13th November 8:45am</b> <br>
+Most recent changes are shown in <span class="red">red</span> ...
+older changes are shown in <span class="brown">brown</span>. <br>
+</div><p style='text-align:center'><b>[Specification]</b>&nbsp;&nbsp;<a href='database.php'>[Database]</a>&nbsp;&nbsp;<a href='schema.php'>[SQL Schema]</a>&nbsp;&nbsp;<a href='grades+rules.php'>[Grades+Rules]</a>&nbsp;&nbsp;<a href='examples.php'>[Examples]</a>&nbsp;&nbsp;<a href='testing.php'>[Testing]</a>&nbsp;&nbsp;<a href='submit.php'>[Submitting]</a>&nbsp;&nbsp;<a href='fixes.php'>[Fixes+Updates]</a></p>
+
+
+<!--
+<div class="note">
+<p style='color:#AA3333'>
+There is enough information in this draft for you to start planning
+how you will extract the data and prepare it for output.
+Precise details of the output formats will be available when the
+Examples and Testing pages are populated.
+The Rules and Academic_object_groups tables are not yet populated,
+but the information at the end of the Grades+Rules page shows
+what rules will be added to the database.
+</p>
+</div>
+-->
+
+<h3>Aims</h3>
+<p>
+This assignment aims to give you practice in
+</p>
+<ul>
+<li> reading and understanding a moderately large and complex  relational schema (MyMyUNSW)
+<li> implementing Python scripts to extract and display data from a database based on this schema
+<li> implementing SQL views and PLpgSQL functions to aid in satisfying requests for information
+</ul>
+<p>
+The goal is to build some useful data access operations on the MyMyUNSW database. 
+</p>
+<p>
+A minor theme of this assignment is "dirty data". We built the
+database, using a collection of reports from UNSW's information
+systems.
+There may be a very occasional glitch in the data,
+but the data is not generally dirty. Just work what’s given,
+and if it produces strange results, then write some queries
+to check whether those results fit with what's actually in
+the database, which is something you should be doing anyway.
+</p>
+<p>
+You may bump into some residual data issues as you
+try to solve the problems below.
+Let us know via the Forum if you have found such data anomalies.
+</p>
+
+<h3>Summary</h3>
+<table border="0" cellpadding="10">
+<tr valign="top"><td><b>Marks</b>:</td>
+<td>
+This assignment contributes <b>20 marks</b> toward your total mark for this course. 
+</td>
+</tr>
+<tr valign="top"><td><b>Submission</b>:</td>
+<td>
+via Webcms3 or <tt>give</tt>, submit the files
+<tt>rules</tt>, <tt>trans</tt>, <tt>prog</tt>, <tt>helpers.py</tt>, <tt>helpers.sql</tt>
+</td>
+</tr>
+<tr><td><b>Deadline</b>:</td>
+<td><s>Friday 12</s> <span class="red">Monday 15</span> November 2021 @ 21:00</td>
+</tr>
+<tr><td><b>Late Penalty</b>:</td>
+<td>
+0.1 <em>marks</em> off the maximum achievable mark for each hour late
+(i.e., 2.4 marks per day).
+</td>
+</table>
+<p>
+<h4>How to do this assignment:</h4>
+</p>
+<ul>
+<li> read this specification carefully and completely
+<li> familiarise yourself with the <a href="database.php">database schema</a>
+<li> create a database <tt>mymyunsw</tt> on the host <tt>d.cse</tt>
+<li> explore the database to see how rules, etc. are represented
+<li> make a private directory for this assignment
+<li> put a copy of the template files there
+<li> edit the files in this directory on a host other than <tt>d.cse</tt>
+<li> on <tt>d.cse</tt>, test that your Python scripts produce the expected output
+<li> submit the assignment via WebCMS3 or <tt>give</tt>
+	(as described on the <a href="submitting.php">What to Submit</a> page)
+</ul>
+<p>
+And, of course, if you have PostgreSQL installed on your home machine,
+you can do all of the <tt>d.cse</tt> work there. BUT don't forget to
+test it on <tt>d.cse</tt> before submitting.
+</p>
+<p>
+The "template files" aim to save you some time in writing Python code.
+E.g. they handle the command-line arguments and let you focus on the
+database interaction. They are available in a file
+<a href="files/ass2.zip">ass2.zip</a>, which contains the following
+</p>
+<ul>
+<li> <tt>helpers.sql</tt> ... any views or PLpgSQL functions to assist your Python </li>
+<li> <tt>helpers.py</tt> ... any Python function to share between scripts </li>
+<li> <tt>trans</tt> ... Python script to produce a transcript </li>
+<li> <tt>rules</tt> ... Python script to display program/stream rules</li>
+<li> <tt>prog</tt> ... Python script to do progression check </li>
+</ul>
+<p>
+There are even a couple of functions in <tt>helpers.py</tt>. Freebies!
+</p>
+
+<h3>Introduction</h3>
+
+<p>
+All Universities require a significant information infrastructure in order
+to manage their affairs. This typically involves a large commercial DBMS
+installation.
+UNSW's student information system sits behind the MyUNSW web site.
+MyUNSW provides an interface to a PeopleSoft enterprise management
+system with an underlying Oracle database. This back-end system
+(Peoplesoft/Oracle) is sometimes called NSS. The specific version of
+PeopleSoft that we use is called Campus Solutions. There is also a
+system called SiMS, which can be used to access the data.
+</p>
+<p>
+UNSW has spent a considerable amount of money ($100M+) on the MyUNSW/NSS
+system, and it handles much of the educational administration plausibly
+well. Most people gripe about the quality of the MyUNSW interface, but
+the system does allow you to carry out most basic enrolment tasks online.
+</p>
+<p>
+Despite its successes, however, MyUNSW/NSS still has a number of
+deficiencies, including:
+<ul>
+<li> no usable representation for degree program structures
+<li> minimal integration with the UNSW Online Handbook
+</ul>
+<p>
+The first point prevents MyUNSW/NSS from being used for three
+important operations that would be extremely helpful to students
+in managing their enrolment:
+</p>
+<ul>
+<li> finding out how far they have progressed through their degree
+	program, and what remains to be completed
+<li> checking what are their enrolment options for next semester
+	(e.g.,  get a list of <q>suggested</q> courses)
+<li> determining when they have completed all of the requirements
+	of their degree program and are eligible to graduate
+</ul>
+<p>
+The second point allows for inconsistencies between the Handbook
+and the system that manages enrolment.
+</p>
+<p>
+NSS contains data about students, courses, classes, pre-requisites,
+quotas, etc. but does not contain any representation of UNSW's
+degree program structures.
+Without such information in the NSS database, it is not possible
+to do any of the above three.
+So, in 2007 the COMP3311 class devised a data model that
+could represent program requirements and rules for UNSW degrees.
+This was built on top of an existing schema that represented all
+of the core NSS data (students, staff, courses, classes, etc.).
+The enhanced data model was named the <q>MyMyUNSW</q> schema.
+</p>
+<p>
+The MyMyUNSW database includes information that encompasses the
+functionality of NSS, the UNSW Online Handbook, and the CATS
+(room allocation) database.
+The MyMyUNSW data model, schema and database are
+described in a <a href="schema.php">separate document</a>.
+Note that, while the <em>schema</em> is the complete one we developed
+in 2007, the <em>data</em> for this database has been trimmed to the
+absolute minimum to do this assignment; many tables and
+columns are empty.
+</p>
+
+<h3>Setting Up</h3>
+
+<p>
+To install the MyMyUNSW database under your PostgreSQL server on <tt>d.cse</tt>,
+simply run the following two commands (after ensuring that your server
+is running):
+</p>
+<pre>
+$ <b>createdb mymyunsw</b>
+$ <b>psql mymyunsw -f /home/cs3311/web/21T3/assignments/ass2/mymyunsw.dump</b>
+</pre>
+<p>
+If everything proceeds correctly, the load output should look
+something like:
+</p>
+<pre>
+SET
+SET
+...
+SET
+CREATE DOMAIN
+<span class='comment'>... a few of these</span>
+CREATE TABLE
+<span class='comment'>... a whole bunch of these</span>
+COPY <i>n</i>
+<span class='comment'>... a whole bunch of these</span>
+ALTER TABLE
+<span class='comment'>... a whole bunch of these</span>
+ALTER TABLE
+</pre>
+<p>
+You should get no <tt>ERROR</tt> messages.
+The database loading should take less than 10 seconds on <tt>d.cse</tt>, assuming
+that <tt>d.cse</tt> is not under heavy load.
+(If you leave your assignment until the last minute, loading the database
+on <tt>d.cse</tt> may be considerably slower, thus delaying your work even more.
+The solution: at least load the database <em>Right Now</em>, even if you
+don't start using it for a while.)
+(Note that the <tt>mymyunsw.dump</tt> file is 3MB in size; copying it under
+your home directory on the CSE machines is not a good idea.)
+</p>
+<p>
+Note that the database is called <tt>mymyunsw</tt> (when you want to access
+it via <tt>psql</tt> or Python script).
+Throughout this document we refer to the database as "MyMyUNSW".
+Note also that this is <b>not</b> real data, although it was generated
+with much swizzling, from real data.
+</p>
+<p>
+A useful thing to do initially is to get a feeling for what data is
+actually there. This may help you understand the schema better, and
+will make the descriptions of the exercises easier to understand.
+Look at the schema. Ask some queries. Do it now.
+</p>
+<p>
+Examples ...
+</p>
+<pre>
+$ <b>psql mymyunsw</b>
+<span class="comment">... PostgreSQL welcome stuff ...</span>
+mymyunsw=# <b>\d</b>
+<span class="comment">... look at the schema ...</span>
+mymyunsw=# <b>select * from Students;</b>
+<span class="comment">... look at the Students table; a list of zid's ...</span>
+mymyunsw=# <b>select p.id,p.fullname from People p join Students s on p.id=s.id;</b>
+<span class="comment">... look at the names and UNSW ids of all students ...</span>
+mymyunsw=# <b>select p.id,p.fullname,s.phone from People p join Staff s on p.id=s.id;</b>
+<span class="comment">... only one result because there's only one staff ...</span>
+mymyunsw=# <b>select count(*) from Course_enrolments;</b>
+<span class="comment">... how many course enrolment records ...</span>
+mymyunsw=# <b>select * from dbpop();</b>
+<span class="comment">... how many records in all tables ...</span>
+mymyunsw=# <span class="comment">... etc. etc. etc.</span>
+mymyunsw=# <b>\q</b>
+</pre>
+<p>
+You will find that many tables (e.g. <tt>Books</tt>, <tt>Buildings</tt>,
+etc.) are currently unpopulated; their contents are not needed for this
+assignment.
+</p>
+
+<h4>Summary on Getting Started</h4>
+
+To set up your database for this assignment, run the following commands:
+</p>
+<pre>
+$ <b>ssh <tt>d.cse</tt></b>
+<span class="comment">... and then on <tt>d.cse</tt> ...</span>
+$ <b>source /localhost/$USER/env</b>
+$ <b>p1</b>
+<span class="comment">... you shut down the server after your last session, didn't you?</span>
+$ <b>createdb  mymyunsw</b>
+$ <b>psql  mymyunsw  -f  /home/cs3311/web/21T3/assignments/ass2/mymyunsw.dump</b>
+$ <b>psql  mymyunsw</b>
+<span class="comment">... run some checks to make sure the database is ok</span>
+$ <b>mkdir  <i>Assignment2Directory</i></b>
+<span class="comment">... make a working directory for Assignment 2</span>
+$ <b>cd <i>Assignment2Directory</i></b>
+$ <b>unzip /home/cs3311/web/21T3/assignments/ass2/files/ass2.zip</b>
+<span class="comment">... puts the template files in your working directory</span>
+</pre>
+<p>
+The only messages produced by these commands should be those noted above.
+If you omit any of the steps, then things will not work as planned.
+If you subsequently ask questions on the Forums, where it's
+clear that you have <em>not</em> done and checked the above steps,
+the questions will not be answered.
+</p>
+
+<h3>Exercises</h3>
+
+<h3>Q1 <span class='marks'>(6 marks)</span></h3>
+
+<p>
+Write a Python script called <tt>trans</tt>, that takes
+a command-line argument giving a student ID, and prints
+a transcript for that student.
+The template script already checks the command line argument.
+<p>
+Each line of the transcript should contain
+</p>
+<pre>
+CourseCode  Term  SubjectTitle  Mark  Grade  UOC
+</pre>
+<p class='brown'>
+Use the following f-string to get the formatting right
+</p>
+<pre class='red'>
+f"{CourseCode} {Term} {SubjectTitle:<32s}{Mark:>3} {Grade:>2s}  {UOC:2d}uoc"
+</pre>
+<p>
+Entries should be ordered by term, and within the same term, by course code.
+You should also calculate a WAM and display this at the end of the course
+lines.
+The WAM is given by </nobr><i>WAM = Sum(Mark*UOC) / TotalAttemptedUOC</i></nobr>.
+How to use the grades and marks to determine the WAM is given
+in the <a href="grades+rules.php">Grades + Rules</a>  page.
+The precise format of the output will be available in the
+<a href="examples.php">Examples</a> page.
+</p>
+<p class="red">
+Ii either of the mark or grad is null, print a "-",
+right-aligned, where grade or mark would normally go.
+</p>
+<p>
+To simplify this task, it would be useful to write a
+<tt>transcript(integer)</tt> function to extract transcript
+data in the correct order as a sequence of tuples of type
+<tt>TranscriptRecord</tt>.
+This type is already defined in the database and you can
+use it or not as you see fit.
+</p>
+<p>
+Tuples of type <tt>TranscriptRecord</tt> contain:
+</p>
+<pre>
+create type TranscriptRecord as (
+        code  char(8), -- UNSW-style course code (e.g. COMP1021)
+        term  char(4), -- term code (e.g. 18s2, 20T3)
+        name  text,    -- short name of the course's subject
+        mark  integer, -- numeric mark acheived
+        grade char(2), -- grade code (e.g. FL,UF,PS,CR,DN,HD)
+        uoc   integer  -- units of credit awarded for the course
+);
+</pre>
+<p>
+Note that this type is already in the database so you won't need
+to define it if you wish to use it.
+</p>
+
+<h3>Q2 <span class='marks'>(6 marks)</span></h3>
+
+<p>
+Write a Python script that takes a program code or a stream code
+and produces a readable list of rules for that program or stream.
+</p>
+<p>
+A number of different rule types are given in the
+<a href="grades+rules.php">Grades and Rules</a> page.
+More details on the precise output format for rules will be
+available in the <a href="examples.php">Examples</a> page.
+All of the rules stored in the dastabase are given in
+the <a href="grades+rules.php">Grades and Rules</a> page.
+</p>
+<p>
+The important tables involved in defining rules:
+</p>
+<ul>
+<li> <tt>rules(id,name,type,min_req,max_req,ao_group,description)</tt> <br>
+where the most important fields are
+<ul>
+<li> <tt>type</tt> ... one of the types described in the <a href="grades+rules.php">Grades and Rules</a> page
+<li> <tt>min_req</tt> ... min requirement to satisfy this rule (could be UOC or a count)
+<li> <tt>max_req</tt> ... max requirement for this rule (could be UOC or a count)
+<li> <tt>ao_group</tt> ... academic object group associated with the rule
+</ul>
+<li> <tt>acad_object_groups(id, name, gtype, glogic, gdefby, negated, parent, definition)</tt> <br>
+where the most important fields are:
+<ul>
+<li> <tt>gtype</tt> ... what kind of objects in the group (all objects are the same type, either subjects or streams)
+<li> <tt>gdefby</tt> ... how the group is defined (by a list of codes and/or patterns)
+<li> <tt>definition</tt> ... where course/stream codes and/or patterns are given
+</ul>
+<li> <tt>program_rules(program,rule)</tt> associates a rule to a program
+<li> <tt>stream_rules(stream,rule)</tt> associates a rule to a stream
+</ul>
+
+<h3>Q3 <span class='marks'>(8 marks)</span></h3>
+
+<p>
+Write a Python script to show a student's progression through their
+program/stream, and what they still need to do to complete their
+degree.
+The script takes three command line parameters:
+</p>
+<pre>
+./prog  <i>StudentID</i>  [ <i>ProgramCode</i>  <i>StreamCode</i> ]
+</pre>
+<p>
+If no program/stream is given, use the program/stream for the
+student's most recent enrolment term.
+The script already checks the validity of the command-line arguments.
+</p>
+<p>
+The output should look like a transcript, but with additional
+information to indicate which rule each course satisfies
+</p>
+<pre>
+CourseCode  Term  CourseTitle  Mark  Grade  UOC  NameOfRule
+</pre>
+<p>
+The order should be the same as for the transcript script
+(i.e. order by term, then by course code within the term).
+<p>
+You should keep track of which courses and how many UOC
+in which rules have been completed.
+After the line for each of the courses taken, you should
+display a sequence of lines indicating which core
+course have not been completed, and how many UOC from
+each group of electives remains to be done.
+</p>
+<p class="brown">
+The strategy for ordering the "to be completed" info
+</p>
+<ul class="brown">
+<li> do all CC rules first, stream CC's before program CC's
+<li> then do all PE rules, stream PE's before programPE's
+<li> then do GE rules, then FE rules
+</ul>
+<p class="brown">
+In other words, most specific to least specific.
+</p>
+<p class="brown">
+Within groups (e.g stream CC's) order by <tt>Rules.id</tt>.
+For CC rules, simply print a list of courses, in the order
+they appear in the group definition.
+For all other rule types, print remaining UOC and the name of
+the group.
+If a student has completed all UOCs for a rule, then no
+information on this rule needs to be printed.
+</p>
+<p class="red">
+If a student has satisfied all rules and enough UOC for the
+program, you should print
+</p>
+<pre class="red">
+Eligible to graduate
+</pre>
+<p class="red">
+instead of the "to be completed" text.
+</p>
+<p>
+More details on the precise output format for rules will be
+available in the <a href="examples.php">Examples</a> page.
+</p>
+
+<h3>Submission</h3>
+<p>
+Submit this assignment by doing the following:
+</p>
+<p style='text-align:center'>
+Login to Course Web Site &gt; Assignments &gt;
+Assignment 2 &gt; Submit Your Work &gt; Make Submission &gt; <br/>
+upload <tt>helpers.sql</tt>, <tt>helpers.py</tt>, <tt>trans</tt>,
+<tt>rules</tt>, <tt>prog</tt> &gt; [Submit]
+</p>
+<p>
+The <tt>helpers.sql</tt> file should contain all the views and functions
+that you've written to make your Python code simpler.
+It should be completely
+self-contained and able to load in a single pass, so that it
+can be auto-tested as follows:
+</p>
+<ul>
+<li> a fresh copy of the MyMyUNSW database will be created
+	(using the schema from <tt>mymyunsw.dump</tt>)
+<li> the data in this database may be <b>different</b> to the
+	database that you're using for testing
+<li> a new <tt>check.sql</tt> file will be loaded
+	(with expected results appropriate for the database)
+<li> the contents of your <tt>helpers.sql</tt> file will be loaded
+<li> each checking function will be executed and the results recorded
+</ul>
+<p>
+Before you submit your solution, you should check that it will load
+correctly for testing by using something like the following operations:
+</p>
+<pre>
+$ <b>dropdb mymyunsw</b>                  <span class="comment">... remove any existing DB</span>
+$ <b>createdb mymyunsw</b>                <span class="comment">... create an empty database</span>
+$ <b>psql mymyunsw -f ..../mymyunsw.dump</b>    <span class="comment">... load the MyMyUNSW schema and data</span>
+$ <b>psql mymyunsw -f helpers.sql</b>        <span class="comment">... load your SQL code</span>
+</pre>
+<p>
+Note: if your database contains any views or functions that are not
+available in the <tt>helpers.sql</tt> file, you should add them to that
+file before you drop the database.
+</p>
+<p>
+If your code does not load without errors, fix it and repeat the above
+until it does.
+<p>
+You must ensure that your <tt>helpers.sql</tt> file will load correctly
+(i.e., it has no syntax errors and it contains all of your view definitions
+in the correct order).
+If we need to manually fix problems with your <tt>helpers.sql</tt>
+file in order to test it (e.g., change the order of some definitions),
+<b>you will be <q>fined</q> via a 1 mark penalty on
+your ceiling mark</b>
+(i.e., the maximum you can score is 19 out of 20 marks).
+</p>
+</div></body>
+</html>

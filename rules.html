@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>COMP3311 21T3 - Assignment 2</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+<link rel='stylesheet' type='text/css' href='https://www.cse.unsw.edu.au/~cs3311/21T3//course.css'>
+</head>
+<body>
+<div class="container"></head>
+<body>
+<div align='center'>
+<table width='100%' border='0'>
+<tr valign='top'>
+<td align='left' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">COMP3311 21T3</a></span>
+</td>
+<td align='center' width='50%'>
+  <span class='heading'>Assignment 2</span><br>
+  <span class='subheading'>Grades and Rules</span>
+</td>
+<td align='right' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">Database Systems</a></span>
+</td>
+</table>
+</div><div style="text-align:center;font-size:80%;color:#555555;margin-top:5px;">
+Last updated: <b>Saturday 13th November 9:02am</b> <br>
+Most recent changes are shown in <span class="red">red</span> ...
+older changes are shown in <span class="brown">brown</span>. <br>
+</div><p style='text-align:center'><a href='index.php'>[Specification]</a>&nbsp;&nbsp;<a href='database.php'>[Database]</a>&nbsp;&nbsp;<a href='schema.php'>[SQL Schema]</a>&nbsp;&nbsp;<b>[Grades+Rules]</b>&nbsp;&nbsp;<a href='examples.php'>[Examples]</a>&nbsp;&nbsp;<a href='testing.php'>[Testing]</a>&nbsp;&nbsp;<a href='submit.php'>[Submitting]</a>&nbsp;&nbsp;<a href='fixes.php'>[Fixes+Updates]</a></p>
+
+
+<h3>Introduction</h3>
+<p>
+This document contains a detailed description of how different kinds
+of rules are defined and what effects grades have in various contexts.
+</p>
+
+<h3>Grades</h3>
+<p>
+Grades have different effects in different contexts:
+</p>
+<ul>
+<li> Rule = used in satisfying Rules
+<li> UOC = used in calculating total UOC
+<li> WAM = used in calcualting WAM (add to UOC-for-WAM + marks)
+</ul>
+<span class="red">Note that UOC is for all courses passed; UOC-for-WAM is for all courses attempted.</span>
+<br/>
+<table class="table">
+<thead>
+<tr>
+<td>Grades</td>
+<td>Rule</td>
+<td>UOC</td>
+<td>WAM</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A,B,C,D<br><small>(with + or -)</small></td><td>yes</td><td>yes</td><td>no</td>
+</td><tr>
+<td>HD,DN,CR,PS</td><td>yes</td><td>yes</td><td>yes</td>
+</td><tr>
+<td>XE,T</td><td>yes</td><td>yes</td><td>no</td>
+</td><tr>
+<td>SY,EC,RC,NC</td><td>yes</td><td>yes</td><td>no</td>
+</td><tr>
+<td>AF,FL,UF,E,F</td><td>no</td><td>no</td><td>yes</td>
+</td><tr>
+<td>AS,AW,NA,PW,RD</td><td>no</td><td>no</td><td>no</td>
+</td><tr>
+<td>NF,LE,PE,WD,WJ</td><td>no</td><td>no</td><td>no</td>
+</td><tr>
+<td>null</td><td>no</td><td>no</td><td>no</td>
+</td><tr>
+</tr>
+</tbody>
+</table>
+<p class='red'>
+Note: AF has no associated mark; it is treated as if the mark were zero.
+</p>
+<p class="red">
+What to print on the transcript for each type of grade:
+</p>
+<ul class="red">
+<li> <i>X</i>uoc for A,B,C,D,HD,DN,CR.PS,XE,T,SY,EC,RC,NC
+<li> <tt>fail</tt> for AF,FL,UF,E,F
+<li> <tt>unrs</tt> (unresolved) for AS,AW,PW,NA,RD,NF,LE,PE,WD,WJ
+</ul>
+<p class="red">
+Many of these grades do not appear in the database, and I don't include
+EM (excluded due to academic misconduct) which isn't really a grade
+applied to individual courses. If you want to find what all these grades
+mean, take a look at <a href"https://www.student.unsw.edu.au/grade">the
+UNSW web site</a>.
+</p>
+
+<h3>Defining Rules</h3>
+<p>
+This gives examples of how different kinds of rules are defined
+in the MyMyUNSW database.
+</p>
+<table class="table">
+<thead>
+<tr>
+<td>Code</td>
+<td>Description</td>
+<td>AO Group</td>
+<td>Min/Max</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DS</td><td>Done Stream = satisfied all requirequirment for a stream</td><td>enumerated list of stream codes</td><td># streams to complete</td>
+</tr><tr>
+<td>CC</td><td>Core Courses; must complete all</td><td>list of course codes (no patterns)</td><td>not needed</td>
+</tr><tr>
+<td>PE</td><td>Prescribed Electives</td><td>list of courses (enumerated or patterns)</td><td>must complete UOC between min and max; (max = null) means "at least min UOC"; (min = null) means "up to max UOC"; cannot both be null</td>
+</tr><tr>
+<td>FE</td><td>Free Electives</td><td> don't need an AO group, but could have one with <tt>FREE####</tt> as the pattern</td><td>as for PE</td>
+</tr><tr>
+<td>GE</td><td>General Education</td><td>any course like <tt>GEN#####</tt> **</td><td>typically min = max = 12</td>
+</tr><tr>
+<td>WM</td><td>WAM requirement</td><td>requires minimum WAM; typically used as a pre-req; not used in this assignment</td><td>min is minimum WAM</td>
+</tr><tr>
+<td>RQ, LR, MR</td><td>rules for pre-req requirements</td><td>not used in this assignment</td><td>-</td
+</tr>
+</tbody>
+</table>
+<p class="red">
+** In theory, you should reject GEs from within the faculty. 
+Since this database is based on enrolment data, this shouldn't happen.
+And sice doing this checks adds extra complexity, there's no need to check.
+</p>
+<p>
+You can find out more about the kinds of rules in the database by asking
+a query on the <tt>rules</tt> table, joined with the <tt>academic_object_groups</tt>
+table to see how things are structured.
+</p>
+<p class='red'>
+When displaying rules, use the following for min and max
+</p>
+<ul class='red'>
+<li> min and max are null ... nothing to be displayed
+<li> min is not null, max is null ... "at least min"
+<li> min is null, max is not null ... "up to max"
+<li> both are not null and min < max ... "between min and max"
+<li> both are not null and min = max ... "min"
+</ul>
+
+<h3>Academic Object Groups</h3>
+
+<p>
+A critical part of describing rules is the subject/stream
+info in the academic object group associated with each rule.
+In MyMyUNSW, such groups can be defined in three different ways:
+</p>
+<ul>
+<li> <tt>enumerated</tt> by giving a list of academic object codes
+<li> <tt>pattern</tt> by giving patterns that identify sets of objects
+<li> <tt>query</tt> by storing an SQL query which returns a set of objects
+</ul>
+<p>
+Note that each academic object group contains items of one
+particular type; either subjects or streams.
+</p>
+<p>
+For this assignment, object groups are defined as comma-separated
+lists of items.
+Each item could be either a course or stream code,
+a choice of several courses,
+or a pattern, which identifies multiple courses.
+There are a wide variety of patterns. You should explore the
+<tt>acad_object_groups</tt> table to see what's available.
+To give you a head start, here are some
+patterns and what they mean:
+</p>
+<ul>
+<li> <tt>COMP1511,COMP1521,COMP1531</tt> ... core first year computing courses
+<li> <tt>{MATH1131;MATH1141}</tt> ... alternatives; take one or the other
+<li> <tt>FREE####</tt> ... any free elective; for this case, simply return the pattern itself**
+<li> <tt>GEN#####</tt> ... any Gen Ed course; for this case, simply return the pattern itself**
+<li> <tt>####1###</tt> ... any level 1 course at UNSW
+<li> <tt>COMP2###</tt> ... any level 2 computing course (e.g. COMP2511, COMP2041)
+<li> <tt>COMP1###,COMP2###</tt> ... first and second year COMP courses
+</ul>
+<p>
+Definitions such as the above are stored in the <tt>definition</tt>
+field in the <tt>academic_object_groups</tt> table.
+</p>
+
+<h3>Rules for CSE Programs and Streams</h3>
+<p>
+Here are the rule sets for each program and stream.
+They were derived from manual reading of the Handbook and
+some rules have been simplified compared to the Handbook.
+It's possible that some rule sets don't accurately reflect
+the Handbook. All of the examples and test cases are based
+on what's in the database and may not precisely reflect reality.
+</p>
+<pre>
+# Rules(id,name,type,min_req,max_req,ao_group,description)
+# Academic_object_groups(id,name,type,defby,definition)
+# Rules.type = (CC,PE,FE,GE,RQ,DS,MR,LR,WM)
+# AOG.type = (subject,stream,program)
+# AOG.defby = (enumerated,pattern,query)
+
+# Programs
+
+3707	3707	Bachelor of Engineering (Hons)
+	DS	S	E	1	1	BE(Hons) Streams
+		AEROAH,BINFAH,CEICAH,CEICDH,COMPBH,CVENAH,CVENBH,ELECAH,MECHAH,SENGAH
+	CC	C	E	-	-	Industrial Training
+		ENGG4999
+	GE	C	P	12	12	General Education
+		GEN#####
+
+3778	3778	Bachelor of Science (Comp Sci)
+	DS	S	E	1	1	Comp Sci Majors
+		COMPA1,COMPD1,COMPE1,COMPI1,COMPJ1,COMPN1,COMPS1,COMPY1
+	CC	C	E	-	-	Foundational Computing
+		COMP1511,COMP1521,COMP1531,COMP2511,COMP2521
+	CC	C	E	-	-	Comp Sci Maths
+		MATH1081,{MATH1131;MATH1141},{MATH1231;MATH1241}
+	CC	C	E	-	-	Comp Sci Advanced Core
+		{COMP3121;COMP3821},COMP3900,COMP4920
+	GE	C	P	12	12	General Education
+		GEN#####
+
+5543	5543	Graduate Diploma in IT
+	CC	C	E	-	-	PG Core Courses
+		COMP9021,COMP9024,COMP9311,COMP9331
+	PE	C	E	18	18	ADK Courses
+		COMP4121,COMP4161,COMP4418,COMP6714,COMP9153,COMP9242,COMP9243,COMP9315,COMP9318,COMP9319,COMP9323,COMP9334,COMP9336,COMP9417,COMP9418,COMP9434,COMP9444,COMP9517
+	PE	C	P	30	30	Prescribed Electives
+		COMP4###,COMP6###,COMP9###
+
+7543	7543	Graduate Certificate in IT
+	PE	C	P	24	24	Grad Cert Elective Courses
+	BINF9###,COMP4###,COMP6###,COMP9###
+
+8543	8543	Master of Information Technology
+	DS	S	E	1	1	MIT Streams
+		COMPAS,COMPBS,COMPCS,COMPDS,COMPES,COMPIS,COMPSS
+	CC	C	E	-	-	Project Management
+		GSOE9820
+	CC	C	E	-	-	PG Core Courses
+		COMP9021,COMP9024,COMP9311,COMP9331
+	CC	C	E	-	-	MIT Project Courses
+		{COMP9900;COMP9991}
+	PE	C	E	36	36	ADK Courses
+		COMP4121,COMP4161,COMP4418,COMP6714,COMP9153,COMP9242,COMP9243,COMP9315,COMP9318,COMP9319,COMP9323,COMP9334,COMP9336,COMP9417,COMP9418,COMP9434,COMP9444,COMP9517,COMP9992,COMP9993
+
+
+# Streams
+
+COMPA1	1	Computer Science
+	PE	C	P	30	-	COMPA1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	36	-	COMPA1 Free Electives
+		########
+
+COMPAS	2	Artificial Intelligence
+	CC	C	E	-  -	COMPAS Core
+		{COMP9414;COMP9814}
+	PE	C	E	18	18	COMPAS Electives
+		COMP4418,COMP9318,COMP9417,COMP9418,COMP9434,COMP9444,COMP9491,COMP9517,MATH5836
+	PE	C	P	-	6	COMPAS Disciplinary Electives
+		BINF6###,BINF9###,COMP4###,COMP6###,COMP9##,GSOE92###
+
+COMPBH	3	Computer Engineering
+	CC	C	E	-	-	Foundational Computing
+		COMP1511,COMP1521,COMP1531,COMP2511,COMP2521
+	CC	C	E	-	-	COMPBH Maths
+		{MATH1131;MATH1141},{MATH1231;MATH1241},MATH2069,MATH2099
+	CC	C	E	-	-	COMPBH Physics and Electronics
+		{PHYS1121;PHYS1131},{PHYS1221;PHYS1231},ELEC1111,ELEC2133,ELEC2134
+	CC	C	E	-	-	COMPBH Design
+		{ENGG1000;DESN1000},DESN2000
+	CC	C	E	-	-	COMPBH Advanced Core
+		COMP3211,COMP3222,COMP3231,COMP3601,COMP4601,COMP4920,COMP4951,COMP4952,COMP4953
+	PE	C	P	36	-	COMPBH Computing Electives
+		ENGG2600,ENGG3060,ENGG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+
+COMPBS	4	Bioinformatics
+	CC	C	E	-	-	COMPBS Core
+		BINF9010,BINF9020
+	PE	C	E	18	18	COMPBS Electives
+		COMP9318,COMP9417,MATH5846,MATH5856
+	PE	C	P	-	6	COMPBS Disciplinary Electives
+		BINF6###,BINF9###,COMP4###,COMP6###,COMP9##,GSOE92###
+
+COMPCS	5	Computer Science
+	PE	C	E	24	24	COMPCS Disciplinary Electives
+		BINF6###,BINF9###,COMP4###,COMP6###,COMP9##,GSOE92###
+
+COMPD1	6	Database Systems
+	CC	C	E	-	-	COMPD1 Core
+		COMP3311
+	PE	C	E	18	18	COMPD1 Electives
+		COMP6714,COMP9312,COMP9313,COMP9315,COMP9318,COMP9319
+	PE	C	P	6	-	COMPD1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	36	-	COMPD1 Free Electives
+		########
+
+COMPDS	7	Database Systems
+	PE	C	E	18	18	COMPDS Electives
+		COMP6714,COMP9312,COMP9313,COMP9315,COMP9318,COMP9319,COMP9321
+	PE	C	P	-	12	COMPDS Disciplinary Electives
+		BINF6###,BINF9###,COMP4###,COMP6###,COMP9##,GSOE92###
+
+COMPE1	8	eCommerce Systems
+	CC	C	E	-	-	COMPE1 Core
+		COMP3311
+	PE	C	E	18	18	COMPE1 Electives
+		COMP3511,COMP9321,COMP9322,COMP9323
+	PE	C	P	6	-	COMPD1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	36	-	COMPD1 Free Electives
+		########
+
+COMPES	9	eCommerce Systems
+	PE	C	E	18	18	COMPES Electives
+		ACCT5922,COMP6324,COMP6452,COMP9313,COMP9321,COMP9322,COMP9323
+	PE	C	P	-	12	COMPES Disciplinary Electives
+		BINF6###,BINF9###,COMP4###,COMP6###,COMP9##,GSOE92###
+
+COMPGS	10	Geographic Information Systems
+
+COMPI1	11	Artificial Intelligence
+	CC	C	E	-	-	COMPI1 Core
+		COMP3411
+	PE	C	E	18	18	COMPI1 Electives
+		COMP3431,COMP4418,COMP9318,COMP9417,COMP9418,COMP9444,COMP9517
+	PE	C	P	6	-	COMPI1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	36	-	COMPI1 Free Electives
+		########
+
+COMPIS	12	Internetworking
+	PE	C	E	18	18	COMPIS Electives
+		COMP9332,COMP9334,COMP6733,COMP9336,COMP9337
+	PE	C	P	-	12	COMPDS Disciplinary Electives
+		BINF6###,BINF9###,COMP4###,COMP6###,COMP9##,GSOE92###
+
+COMPJ1	13	Programming Languages
+	CC	C	E	-	-	COMPJ1 Core
+		COMP3161
+	PE	C	E	18	18	COMPJ1 Electives
+		COMP3131,COMP3141,COMP3151,COMP6771
+	PE	C	P	6	-	COMPJ1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	36	-	COMPJ1 Free Electives
+		########
+
+COMPN1	14	Computer Networks
+	CC	C	E	-	-	COMPN1 Core
+		COMP3331
+	PE	C	E	18	18	COMPN1 Electives
+		COMP4336,COMP4337,COMP6733,COMP9332,COMP9334
+	PE	C	P	6	-	COMPN1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	36	-	COMPN1 Free Electives
+		########
+
+COMPS1	15	Embedded Systems
+	CC	C	E	-	-	COMPS1 Core
+		COMP2121,COMP3222
+	PE	C	E	18	18	COMPS1 Electives
+		COMP3211,COMP3231,COMP3601,COMP4601,COMP9242,COMP9517
+	PE	C	P	6	-	COMPS1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	30	-	COMPS1 Free Electives
+		########
+
+COMPSS	16	Data Science and Engineering
+	PE	C	E	6	12	COMPSS Algos/Stats Electives
+		COMP4141,COMP6741,MATH5845,MATH5855,MATH5905,MATH5960
+	PE	C	E	6	12	COMPSS Databases Electives
+		COMP9313,COMP9315,COMP9318,COMP9319,COMP9321
+	PE	C	E	6	12	COMPSS Machine Learning Electives
+		COMP4418,COMP6714,COMP9417,MATH5836,COMP9444
+	PE	C	P	-	6	COMPSS Disciplinary Electives
+		BINF6###,BINF9###,COMP4###,COMP6###,COMP9##,GSOE92###
+
+COMPY1	17	Security Engineering
+	CC	C	E	-	-	COMPY1 Core
+		{COMP6441;COMP6841}
+	PE	C	E	18	18	COMPY1 Electives
+		COMP4337,{COMP6443;COMP6843},{COMP6445;COMP6845},COMP6447,COMP6448,COMP6449,COMP9447,MATH3411,TELE3119
+	PE	C	P	6	-	COMPY1 Computing Electives
+		ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+	FE	C	P	30	-	COMPY1 Free Electives
+		########
+
+SENGAH	18	Software Engineering
+	CC	C	E	-	-	Foundational Computing
+		COMP1511,COMP1521,COMP1531,COMP2511,COMP2521
+	CC	C	E	-	-	SENGAH Maths
+		MATH1081,{MATH1131;MATH1141},{MATH1231;MATH1241},MATH2400,MATH2859
+	CC	C	E	-	-	SENGAH Workshops/Design
+		DESN2000,SENG2011,SENG2021,SENG3011
+	CC	C	E	-	-	SENGAH Advanced Core
+		COMP2041,COMP3141,COMP3311,COMP3331,SENG4920,COMP4951,COMP4952,COMP4953
+	PE	C	P	36	-	SENGAH Discipline Electives
+		ENGG2600,ENGG3060,ENGG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###,INFS3###,INFS4###,MATH3###,MATH4###,MATH6###,ELEC3###,ELEC4###,TELE3###,TELE4###
+	FE	C	P	6	6	SENGAH Free Electives
+		########
+</pre>
+</div></body>
+</html>

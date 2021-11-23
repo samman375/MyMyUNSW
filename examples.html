@@ -1,0 +1,511 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>COMP3311 21T3 - Assignment 2</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+<link rel='stylesheet' type='text/css' href='https://www.cse.unsw.edu.au/~cs3311/21T3//course.css'>
+</head>
+<body>
+<div class="container"></head>
+<body>
+<div align='center'>
+<table width='100%' border='0'>
+<tr valign='top'>
+<td align='left' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">COMP3311 21T3</a></span>
+</td>
+<td align='center' width='50%'>
+  <span class='heading'>Assignment 2</span><br>
+  <span class='subheading'>Examples</span>
+</td>
+<td align='right' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">Database Systems</a></span>
+</td>
+</table>
+</div><div style="text-align:center;font-size:80%;color:#555555;margin-top:5px;">
+Last updated: <b>Saturday 13th November 4:31pm</b> <br>
+Most recent changes are shown in <span class="red">red</span> ...
+older changes are shown in <span class="brown">brown</span>. <br>
+</div><p style='text-align:center'><a href='index.php'>[Specification]</a>&nbsp;&nbsp;<a href='database.php'>[Database]</a>&nbsp;&nbsp;<a href='schema.php'>[SQL Schema]</a>&nbsp;&nbsp;<a href='grades+rules.php'>[Grades+Rules]</a>&nbsp;&nbsp;<b>[Examples]</b>&nbsp;&nbsp;<a href='testing.php'>[Testing]</a>&nbsp;&nbsp;<a href='submit.php'>[Submitting]</a>&nbsp;&nbsp;<a href='fixes.php'>[Fixes+Updates]</a></p>
+
+
+<h3>Introduction</h3>
+<p>
+This document contains examples of output from the various scripts
+that you are required to develop.
+</p>
+
+<br/><br/>
+<h3>Transcripts</h3>
+<p>
+You are not required to display e.g. <tt>2778/36</tt>.
+This is just to show <nobr>WAM = weighted_mark_sum / total_attempted_uoc</nobr> to help with debugging.
+</p>
+<br>
+<pre>
+$ <b>./trans 5124159</b>
+5124159 Magia, Tristan
+COMP9318 17s1 Data Warehousing & Data Mining   65 CR   6uoc
+COMP9319 17s1 Web Data Compression & Search    86 HD   6uoc
+COMP9417 17s1 Machine Learning & Data Mining   78 DN   6uoc
+COMP6714 17s2 Info Retrieval and Web Search    69 CR   6uoc
+COMP9313 17s2 Big Data Management              77 DN   6uoc
+COMP9444 17s2 Neural Networks, Deep Learning   88 HD   6uoc
+UOC = 36, WAM = 2778/36 = 77.2
+
+$ <b>./trans 5123788</b>
+5123788 Greenfield, Drew
+COMP9021 17s1 Principles of Programming       100 HD   6uoc
+COMP9311 17s1 Database Systems                 63 PS   6uoc
+COMP9024 17s2 Data Structures & Algorithms     86 HD   6uoc
+COMP9331 17s2 Computer Networks&Applications   79 DN   6uoc
+GSOE9820 17s2 Project Management               94 HD   6uoc
+COMP9020 18s1 Foundations of Comp. Science     85 HD   6uoc
+COMP9414 18s1 Artificial Intelligence          91 HD   6uoc
+COMP9315 18s2 Database Systems Implementat'n   76 DN   6uoc
+COMP9444 18s2 Neural Networks, Deep Learning   63 PS   6uoc
+COMP9417 19T2 Machine Learning & Data Mining   96 HD   6uoc
+COMP9313 19T3 Big Data Management              76 DN   6uoc
+MATH5846 20T1 Intro to Prob and Stoch Proc      - SY   6uoc
+MATH5856 20T1 Intro to Stats and Stat Comput    - SY   6uoc
+COMP9900 20T2 Info Tech Project               100 HD   6uoc
+MATH5855 20T3 Multivariate Analysis           100 HD   6uoc
+UOC = 90, WAM = 6654/78 = 85.3
+
+$ <b>./trans 5146704</b>
+5146704 Kung, Xuanyan
+COMP1927 17s1 Computing 2                      73 CR   6uoc
+COMP2121 17s1 Microprocessors & Interfacing    55 PS   6uoc
+ECON1101 17s1 Microeconomics 1                 65 CR   6uoc
+MATH1081 17s1 Discrete Mathematics             65 CR   6uoc
+COMP1531 17s2 Software Eng Fundamentals        54 PS   6uoc
+COMP2041 17s2 Software Construction             - AF   fail
+MATH2400 17s2 Finite Mathematics               43 FL   fail
+MATH2859 17s2 Prob, Stats and Information      43 FL   fail
+INFS1602 18x1 Digital Transformation in Bus     - AF   fail
+COMP2111 18s1 System Modelling and Design      48 FL   fail
+COMP2511 18s1 O-O Design & Programming         39 FL   fail
+COMP3311 18s1 Database Systems                 32 FL   fail
+SENG2021 18s1 Reqts & Design Workshop          75 DN   6uoc
+COMP2041 18s2 Software Construction             - AF   fail
+COMP3161 18s2 Concepts of Programming Lang.     - AF   fail
+COMP3331 18s2 Computer Networks&Applications    - AF   fail
+ECON1102 18s2 Macroeconomics 1                 36 FL   fail
+COMP2511 20T2 O-O Design & Programming         36 FL   fail
+COMP3121 20T2 Algorithms & Programming Tech    46 FL   fail
+COMP3331 20T2 Computer Networks&Applications   45 FL   fail
+COMP1521 20T3 Computer Systems Fundamentals     - AF   fail
+GENC3004 20T3 Personal Finance                 47 FL   fail
+UOC = 36, WAM = 4554/126 = 36.1
+
+$ <b>./trans 5124862</b>
+5124862 Wehbe, Ran
+COMP2121 17s1 Microprocessors & Interfacing    75 DN   6uoc
+COMP2911 17s1 Eng. Design in Computing         68 CR   6uoc
+COMP6443 17s1 Web Application Security         74 CR   6uoc
+PSYC1023 17s1 Abnormal Psychology              66 CR   6uoc
+COMP2041 17s2 Software Construction            61 PS   6uoc
+COMP6445 17s2 Digital Forensics                84 DN   6uoc
+MATH1081 17s2 Discrete Mathematics             55 PS   6uoc
+COMP3121 18s1 Algorithms & Programming Tech    61 PS   6uoc
+COMP3231 18s1 Operating Systems                64 PS   6uoc
+COMP6841 18s1 Extended Security Engineering    73 CR   6uoc
+COMP3161 18s2 Concepts of Programming Lang.    72 CR   6uoc
+COMP6447 18s2 Security Assessment              51 PS   6uoc
+COMP9444 18s2 Neural Networks, Deep Learning   51 PS   6uoc
+COMP1531 19T1 Software Eng Fundamentals        59 PS   6uoc
+COMP3900 19T1 Computer Science Project         60 PS   6uoc
+COMP3141 19T2 Software Sys Des&Implementat'n   87 HD   6uoc
+COMP3331 19T2 Computer Networks&Applications   54 PS   6uoc
+COMP4920 19T3 Management and Ethics            80 DN   6uoc
+UOC = 108, WAM = 7170/108 = 66.4
+
+$ <b>./trans 5146401</b>
+5146401 KANG, Shuni
+COMP9020 17s1 Foundations of Comp. Science     46 FL   fail
+COMP9021 17s1 Principles of Programming        33 FL   fail
+COMP9311 17s1 Database Systems                  - AF   fail
+GSOE9820 17s1 Project Management               38 FL   fail
+<span class="red">UOC = 0, WAM = 702/24 = 29.2</span>
+
+$ <b>./trans 5159189</b>
+5159189 Butturini Pajares, Diego
+ARTS1210 18s1 Concepts of Asia                 56 PS   6uoc
+ARTS1570 18s1 Introductory Spanish A           84 DN   6uoc
+INST1005 18s1 Key Debates in Intl Studies      63 PS   6uoc
+MGMT1101 18s1 Global Business Environment      90 HD   6uoc
+ARTS1571 18s2 Introductory Spanish B           86 HD   6uoc
+ECON1101 18s2 Microeconomics 1                 81 DN   6uoc
+INST1006 18s2 The World in Transition          94 HD   6uoc
+MGMT3102 18s2 Asia-Pacific Business            79 DN   6uoc
+ARTS2570 19T1 Intermediate Spanish A           79 DN   6uoc
+INST2003 19T1 Research Methods                 87 HD   6uoc
+MGMT2101 19T1 Int Bus & Multinat Operations    73 CR   6uoc
+MGMT3721 19T1 Negotiation Skills               72 CR   6uoc
+ARTS1620 19T2 Introductory Italian A           72 CR   6uoc
+FINS1613 19T2 Business Finance                 76 DN   6uoc
+MGMT2102 19T2 Managing Across Cultures         64 PS   6uoc
+MGMT3101 19T2 I'national Business Strategy    100 HD   6uoc
+EXCH8010 19T3 BInst Exchange Program            - XE  24uoc
+EXCH8035 20T1 BInst Exchange Program            - XE  18uoc
+ARTS2457 20T2 China Imagined and Perceived     70 CR   6uoc
+EXCH8033 20T2 BInst Exchange Program            - XE   6uoc
+MGMT2725 20T2 Career Management                72 CR   6uoc
+MGMT3003 20T2 Global Entrepreneurship          80 DN   6uoc
+ARTS2813 20T3 International Security           90 HD   6uoc
+ARTS3570 20T3 Advanced Spanish A               89 HD   6uoc
+INST3900 20T3 Int Studies Advanced Seminar     74 CR   6uoc
+UOC = 180, WAM = 10386/132 = 78.7
+
+
+... MORE TO COME ...
+
+</pre>
+<br/>
+<p>But here's more info  ...<br/>
+there are two UOC totals in this question
+</p>
+<ul>
+<li> total_achieved_uoc = sum ( uoc_i) where course_i is a "pass" <br/>
+this includes obvious ones like HD,DN,... but also ones like XE <br/>
+basically any couse with "yes" in the UOC column in the Grades table </li>
+<li> total_attempted_uoc = sum(uoc_i) for any course_i attempted <br>
+even if the course was failed, we count its UOC; it was attempted<br/>
+any course which has "yes" in the WAM column in the Grades table</li>
+<li> weighted_mark_sum = sum(uoc_i * mark_i) for any course_i attempted<br/>
+any course which has "yes" in the WAM column in the Grades table</li>
+if the course has no mark, treat the mark as zero </li>
+</ul>
+<p>
+WAM = weighted_mark_sum / total_attempted_uoc
+</p>
+
+<h3>Rules</h3>
+<pre>
+<span class="comment">-- all the ???s are because we haven't put these Streams in the database</span>
+$ <b>./rules 3707</b>
+3707 Bachelor of Engineering (Hons), 192 UOC, 4.0 years
+- offered by Faculty of Engineering
+Academic Requirements:
+1 stream(s) from BE(Hons) Streams
+- AEROAH ???
+- BINFAH ???
+- CEICAH ???
+- CEICDH ???
+- COMPBH Computer Engineering
+- CVENAH ???
+- CVENBH ???
+- ELECAH ???
+- ELECCH ???
+- GMATDH ???
+- MANFBH ???
+- MECHAH ???
+- MINEAH ???
+- MTRNAH ???
+- PETRAH ???
+- SENGAH Software Engineering
+- SOLAAH ???
+- SOLABH ???
+- TELEAH ???
+Industrial Training
+- ENGG4999 Industrial Training
+12 UOC of General Education
+
+$ <b>./rules 3778</b>
+3778 Bachelor of Science (Comp Sci), 144 UOC, 3.0 years
+- offered by School of Computer Science and Engineering
+Academic Requirements:
+1 stream(s) from Comp Sci Majors
+- COMPA1 Computer Science
+- COMPD1 Database Systems
+- COMPE1 eCommerce Systems
+- COMPI1 Artificial Intelligence
+- COMPJ1 Programming Languages
+- COMPN1 Computer Networks
+- COMPS1 Embedded Systems
+- COMPY1 Security Engineering
+all courses from Foundational Computing
+- COMP1511 Programming Fundamentals
+- COMP1521 Computer Systems Fundamentals
+- COMP1531 Software Eng Fundamentals
+- COMP2511 O-O Design &amp; Programming
+- COMP2521 Data Structures and Algorithms
+all courses from Comp Sci Maths
+- MATH1081 Discrete Mathematics
+- MATH1131 Mathematics 1A
+  or MATH1141 Higher Mathematics 1A
+- MATH1231 Mathematics 1B
+  or MATH1241 Higher Mathematics 1B
+all courses from Comp Sci Advanced Core
+- COMP3121 Algorithms & Programming Tech
+  or COMP3821 Ext Algorithms&Prog Techniques
+- COMP3900 Computer Science Project
+- COMP4920 Management and Ethics
+12 UOC of General Education
+
+$ <b>./rules COMPAS</b>
+COMPAS Artificial Intelligence
+- offered by School of Computer Science and Engineering
+Academic Requirements:
+COMPAS Core
+- COMP9414 Artificial Intelligence
+  or COMP9814 Ext Artificial Intelligence
+18 UOC courses from COMPAS Electives
+- COMP4418 Knowledge Representation
+- COMP9318 Data Warehousing & Data Mining
+- COMP9417 Machine Learning & Data Mining
+- COMP9418 Advanced Machine Learning
+- COMP9434 Robotic Software Architecture
+- COMP9444 Neural Networks, Deep Learning
+- COMP9491 ???
+- COMP9517 Computer Vision
+- MATH5836 Data Mining
+up to 6 UOC courses from COMPAS Disciplinary Electives
+- courses matching BINF6###,BINF9###,COMP4###,COMP6###,COMP9###,GSOE92##
+
+$ <b>./rules COMPA1</b>
+COMPA1 Computer Science
+- offered by School of Computer Science and Engineering
+Academic Requirements:
+at least 30 UOC courses from COMPA1 Computing Electives
+- courses matching ENGG2600,ENG3600,ENGG4600,COMP3###,COMP4###,COMP6###,COMP9###
+at least 36 UOC of Free Electives
+
+$ <b>./rules COMPSS</b>
+COMPSS Data Science and Engineering
+- offered by School of Computer Science and Engineering
+Academic Requirements:
+between 6 and 12 UOC courses from COMPSS Algos/Stats Electives
+- COMP4141 Theory of Computation
+- COMP6741 Parameterized & Exact Comp.
+- MATH5845 Time Series
+- MATH5855 Multivariate Analysis
+- MATH5905 Statistical Inference
+- MATH5960 Bayesian Inference & Comput'n
+between 6 and 12 UOC courses from COMPSS Databases Electives
+- COMP9313 Big Data Management
+- COMP9315 Database Systems Implementat'n
+- COMP9318 Data Warehousing & Data Mining
+- COMP9319 Web Data Compression & Search
+- COMP9321 Data Services Engineering
+between 6 and 12 UOC courses from COMPSS Machine Learning Electives
+- COMP4418 Knowledge Representation
+- COMP6714 Info Retrieval and Web Search
+- COMP9417 Machine Learning & Data Mining
+- MATH5836 Data Mining
+- COMP9444 Neural Networks, Deep Learning
+up to 6 UOC courses from COMPSS Disciplinary Electives
+- courses matching BINF6###,BINF9###,COMP4###,COMP6###,COMP9###,GSOE92##
+
+
+... MORE TO COME ...
+
+
+</pre>
+
+<h3>Progession Checks</h3>
+<pre>
+$ <b>./prog 5197273 3707 COMPBH</b>
+5197273 Wilson-Rogers, Darien
+  3707 Bachelor of Engineering (Hons)
+  COMPBH Computer Engineering
+
+Completed:
+COMP1511 19T1 Programming Fundamentals         84 DN   6uoc towards Foundational Computing
+ENGG1000 19T1 Engineering Design               69 CR   6uoc towards COMPBH Design
+MATH1131 19T1 Mathematics 1A                   84 DN   6uoc towards COMPBH Maths
+COMP1521 19T2 Computer Systems Fundamentals    88 HD   6uoc towards Foundational Computing
+MATH1231 19T2 Mathematics 1B                   54 PS   6uoc towards COMPBH Maths
+PHYS1121 19T2 Physics 1A                       85 HD   6uoc towards COMPBH Physics and Electronics
+COMP1531 19T3 Software Eng Fundamentals        52 PS   6uoc towards Foundational Computing
+ELEC1111 19T3 Elec & Telecomm Eng              64 PS   6uoc towards COMPBH Physics and Electronics
+COMP2521 20T1 Data Structures and Algorithms    - SY   6uoc towards Foundational Computing
+COMP3121 20T2 Algorithms & Programming Tech   100 HD   6uoc towards COMPBH Computing Electives
+COMP3231 20T2 Operating Systems                71 CR   6uoc towards COMPBH Advanced Core
+COMP2511 20T3 O-O Design & Programming         94 HD   6uoc towards Foundational Computing
+COMP3222 20T3 Digital Circuits and Systems     83 DN   6uoc towards COMPBH Advanced Core
+UOC = 78 so far
+
+Remaining to complete degree:
+- MATH2069 Mathematics 2A
+- MATH2099 Mathematics 2B
+- PHYS1221 Physics 1B
+  or PHYS1231 Higher Physics 1B
+- ELEC2133 Analogue Electronics
+- ELEC2134 Circuits and Signals
+- DESN2000 Engineering Design 2
+- COMP3211 Computer Architecture
+- COMP3601 Design Project A
+- COMP4601 Design Project B
+- COMP4920 Management and Ethics
+- COMP4951 Research Thesis A
+- COMP4952 Research Thesis B
+- COMP4953 Research Thesis C
+- ENGG4999 Industrial Training
+at least 30 UOC courses from COMPBH Computing Electives
+12 UOC of General Education
+
+
+-- ADK courses are treated specially; their UOC counts once
+-- normally, courses are assigned to satisfy just one requirement
+-- after checking for regular requirement, also check if it is ADK.
+-- courses that don't satisfy any requirement, don't contribute any UOC
+
+$ <b>./prog 5123788</b>
+5123788 Greenfield, Drew
+  8543 Master of Information Technology
+  COMPSS Data Science and Engineering
+
+Completed:
+COMP9021 17s1 Principles of Programming       100 HD   6uoc towards PG Core Courses
+COMP9311 17s1 Database Systems                 63 PS   6uoc towards PG Core Courses
+COMP9024 17s2 Data Structures & Algorithms     86 HD   6uoc towards PG Core Courses
+COMP9331 17s2 Computer Networks&Applications   79 DN   6uoc towards PG Core Courses
+GSOE9820 17s2 Project Management               94 HD   6uoc towards Project Management
+COMP9020 18s1 Foundations of Comp. Science     85 HD   6uoc towards COMPSS Disciplinary Electives
+COMP9414 18s1 Artificial Intelligence          91 HD   0uoc does not satisfy any rule
+COMP9315 18s2 Database Systems Implementat'n   76 DN   6uoc towards COMPSS Databases Electives + ADK Courses
+COMP9444 18s2 Neural Networks, Deep Learning   63 PS   6uoc towards COMPSS Machine Learning Electives + ADK Courses
+COMP9417 19T2 Machine Learning & Data Mining   96 HD   6uoc towards COMPSS Machine Learning Electives + ADK Courses
+COMP9313 19T3 Big Data Management              76 DN   6uoc towards COMPSS Databases Electives
+MATH5846 20T1 Intro to Prob and Stoch Proc      - SY   0uoc does not satisfy any rule
+MATH5856 20T1 Intro to Stats and Stat Comput    - SY   0uoc does not satisfy any rule
+COMP9900 20T2 Info Tech Project               100 HD   6uoc towards MIT Project Courses
+MATH5855 20T3 Multivariate Analysis           100 HD   6uoc towards COMPSS Algos/Stats Electives
+UOC = 72 so far
+
+Remaining to complete degree:
+between 0 and 6 UOC courses from COMPSS Algos/Stats Electives
+18 UOC from ADK Courses
+
+
+-- if you want to get the same answer as below, you will need to
+-- apply this SQL statement to your database
+--  update academic_object_groups
+--  set definition='ENGG1000,DESN2000,SENG2011,SENG2021,SENG3011'
+--  where id = 686014;
+-- if you don't, ENGG1000 will be treated as a Free Elective
+
+$ <b>./prog 5198386</b>
+5198386 Dib, Karim
+  3707 Bachelor of Engineering (Hons)
+  SENGAH Software Engineering
+
+Completed:
+COMP1511 19T1 Programming Fundamentals         62 PS   6uoc towards Foundational Computing
+ENGG1000 19T1 Engineering Design               51 PS   6uoc towards SENGAH Workshops/Design
+MATH1131 19T1 Mathematics 1A                   54 PS   6uoc towards SENGAH Maths
+CHEM1011 19T2 Chemistry 1A                     87 HD   6uoc towards Free Electives
+COMP1521 19T2 Computer Systems Fundamentals    47 FL   fail does not count
+MATH1081 19T2 Discrete Mathematics             71 CR   6uoc towards SENGAH Maths
+COMP1521 19T3 Computer Systems Fundamentals    58 PS   6uoc towards Foundational Computing
+COMP1531 19T3 Software Eng Fundamentals        67 CR   6uoc towards Foundational Computing
+MATH1231 19T3 Mathematics 1B                   56 PS   6uoc towards SENGAH Maths
+COMP2521 20T1 Data Structures and Algorithms    - SY   6uoc towards Foundational Computing
+SENG2021 20T1 Reqts & Design Workshop          65 CR   6uoc towards SENGAH Workshops/Design
+COMP2041 20T2 Software Construction            46 FL   fail does not count
+DESN2000 20T2 Engineering Design 2             80 DN   6uoc towards SENGAH Workshops/Design
+MATH2400 20T2 Finite Mathematics               35 FL   fail does not count
+MATH2859 20T2 Prob, Stats and Information      31 FL   fail does not count
+COMP2511 20T3 O-O Design & Programming         32 FL   fail does not count
+COMP3311 20T3 Database Systems                 75 DN   6uoc towards SENGAH Advanced Core
+UOC = 72 so far
+
+Remaining to complete degree:
+- COMP2511 O-O Design & Programming
+- MATH2400 Finite Mathematics
+- MATH2859 Prob, Stats and Information
+- SENG2011 Program Reasoning Workshop
+- SENG3011 Software Eng Workshop 3
+- COMP2041 Software Construction
+- COMP3141 Software Sys Des&Implementat'n
+- COMP3331 Computer Networks&Applications
+- SENG4920 Ethics and Management
+- COMP4951 Research Thesis A
+- COMP4952 Research Thesis B
+- COMP4953 Research Thesis C
+- ENGG4999 Industrial Training
+at least 36 UOC courses from SENGAH Discipline Electives
+12 UOC of General Education
+
+
+$ <b>./prog 5198386 3778 COMPA1</b>
+5198386 Dib, Karim
+  3778 Bachelor of Science (Comp Sci)
+  COMPA1 Computer Science
+
+Completed:
+COMP1511 19T1 Programming Fundamentals         62 PS   6uoc towards Foundational Computing
+ENGG1000 19T1 Engineering Design               51 PS   6uoc towards Free Electives
+MATH1131 19T1 Mathematics 1A                   54 PS   6uoc towards Comp Sci Maths
+CHEM1011 19T2 Chemistry 1A                     87 HD   6uoc towards Free Electives
+COMP1521 19T2 Computer Systems Fundamentals    47 FL   fail does not count
+MATH1081 19T2 Discrete Mathematics             71 CR   6uoc towards Comp Sci Maths
+COMP1521 19T3 Computer Systems Fundamentals    58 PS   6uoc towards Foundational Computing
+COMP1531 19T3 Software Eng Fundamentals        67 CR   6uoc towards Foundational Computing
+MATH1231 19T3 Mathematics 1B                   56 PS   6uoc towards Comp Sci Maths
+COMP2521 20T1 Data Structures and Algorithms    - SY   6uoc towards Foundational Computing
+SENG2021 20T1 Reqts & Design Workshop          65 CR   6uoc towards Free Electives
+COMP2041 20T2 Software Construction            46 FL   fail does not count
+DESN2000 20T2 Engineering Design 2             80 DN   6uoc towards Free Electives
+MATH2400 20T2 Finite Mathematics               35 FL   fail does not count
+MATH2859 20T2 Prob, Stats and Information      31 FL   fail does not count
+COMP2511 20T3 O-O Design & Programming         32 FL   fail does not count
+COMP3311 20T3 Database Systems                 75 DN   6uoc towards COMPA1 Computing Electives
+UOC = 72 so far
+
+Remaining to complete degree:
+- COMP2511 O-O Design & Programming
+- COMP3121 Algorithms & Programming Tech
+  or COMP3821 Ext Algorithms&Prog Techniques
+- COMP3900 Computer Science Project
+- COMP4920 Management and Ethics
+at least 24 UOC courses from COMPA1 Computing Electives
+12 UOC of General Education
+at least 12 UOC of Free Electives
+
+
+-- so close ... if only they hadn't failed HUMS1005
+-- they could take further COMP courses, but they'd be
+--   counted as Free Electives to satisfy the rules
+
+$ <b>./prog 5135945</b>
+5135945 Yong, Xuanzhi
+  3778 Bachelor of Science (Comp Sci)
+  COMPA1 Computer Science
+
+Completed:
+COMP1511 17s1 Programming Fundamentals         62 PS   6uoc towards Foundational Computing
+HUMS1005 17s1 English Language Enhancement     41 FL   fail does not count
+MATH1081 17s1 Discrete Mathematics             54 PS   6uoc towards Comp Sci Maths
+MATH1131 17s1 Mathematics 1A                   61 PS   6uoc towards Comp Sci Maths
+COMP1531 17s2 Software Eng Fundamentals        94 HD   6uoc towards Foundational Computing
+COMP2521 17s2 Data Structures and Algorithms   60 PS   6uoc towards Foundational Computing
+INFS1603 17s2 Intro to Business Databases      55 PS   6uoc towards Free Electives
+MATH1231 17s2 Mathematics 1B                   50 PS   6uoc towards Comp Sci Maths
+COMP1521 18s1 Computer Systems Fundamentals    51 PS   6uoc towards Foundational Computing
+COMP3411 18s1 Artificial Intelligence          55 PS   6uoc towards COMPA1 Computing Electives
+DIPP1112 18s1 Creating Your Career             51 PS   6uoc towards Free Electives
+COMP2041 18s2 Software Construction            70 CR   6uoc towards Free Electives
+COMP2511 18s2 O-O Design & Programming         51 PS   6uoc towards Foundational Computing
+ECON1101 18s2 Microeconomics 1                 78 DN   6uoc towards Free Electives
+GENC3004 18s2 Personal Finance                 76 DN   6uoc towards General Education
+COMP3121 19T1 Algorithms & Programming Tech    60 PS   6uoc towards Comp Sci Advanced Core
+COMP3311 19T1 Database Systems                 68 CR   6uoc towards COMPA1 Computing Electives
+PHYS1160 19T1 Introduction to Astronomy        86 HD   6uoc towards Free Electives
+COMP3331 19T2 Computer Networks&Applications   50 PS   6uoc towards COMPA1 Computing Electives
+COMP9313 19T2 Big Data Management              82 DN   6uoc towards COMPA1 Computing Electives
+COMP9417 19T2 Machine Learning & Data Mining   65 CR   6uoc towards COMPA1 Computing Electives
+COMP3900 19T3 Computer Science Project         66 CR   6uoc towards Comp Sci Advanced Core
+COMP4920 19T3 Management and Ethics            74 CR   6uoc towards Comp Sci Advanced Core
+GENS1111 19T3 Big Fat Myths                    63 PS   6uoc towards General Education
+UOC = 138 so far
+
+Remaining to complete degree:
+at least 6 UOC of Free Electives
+
+... MORE TO COME ...
+</pre>
+
+</div></body>
+</html>

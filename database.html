@@ -1,0 +1,504 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>COMP3311 21T3 - Assignment 2</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+<link rel='stylesheet' type='text/css' href='https://www.cse.unsw.edu.au/~cs3311/21T3//course.css'>
+</head>
+<body>
+<div class="container"></head>
+<body>
+<div align='center'>
+<table width='100%' border='0'>
+<tr valign='top'>
+<td align='left' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">COMP3311 21T3</a></span>
+</td>
+<td align='center' width='50%'>
+  <span class='heading'>Assignment 2</span><br>
+  <span class='subheading'>The MyMyUNSW Database (ER)</span>
+</td>
+<td align='right' width='25%'>
+  <span class='tiny'><a href="https://www.cse.unsw.edu.au/~cs3311/21T3/">Database Systems</a></span>
+</td>
+</table>
+</div><div style="text-align:center;font-size:80%;color:#555555;margin-top:5px;">
+Last updated: <b>Thursday 28th October 12:45am</b> <br>
+Most recent changes are shown in <span class="red">red</span> ...
+older changes are shown in <span class="brown">brown</span>. <br>
+</div><p style='text-align:center'><a href='index.php'>[Specification]</a>&nbsp;&nbsp;<b>[Database]</b>&nbsp;&nbsp;<a href='schema.php'>[SQL Schema]</a>&nbsp;&nbsp;<a href='grades+rules.php'>[Grades+Rules]</a>&nbsp;&nbsp;<a href='examples.php'>[Examples]</a>&nbsp;&nbsp;<a href='testing.php'>[Testing]</a>&nbsp;&nbsp;<a href='submit.php'>[Submitting]</a>&nbsp;&nbsp;<a href='fixes.php'>[Fixes+Updates]</a></p>
+
+
+<h3>Introduction</h3>
+<p>
+This document contains a description of the MyMyUNSW database
+as an annotated ER model.
+Note that some parts of the model are grey-ed out; the tables implied
+by these ER elements are not populated in the database, because they are
+not relevant to this assignment.
+</p>
+
+<h3>Background</h3>
+<p>
+UNSW handles its administrative information using a version of the
+Peoplesoft product called Campus Solutions.
+This system is normally accessed via the MyUNSW portal and is
+maintained by the NSS unit in UNSW IT, and so it's variously
+called <q>PeopleSoft</q>, <q>Campus Solutions</q>, <q>MyUNSW</q>
+and <q>NSS</q>.
+The database behind the system is hosted on a large Oracle server,
+and throughout this document will be referred to as the <q>NSS
+database</q>.
+<p>
+The PeopleSoft system was installed in 2000 and has been modified/extended
+over the years to encompass:
+</p>
+<ul>
+<li> human resources (staff/employees, payroll, etc.)
+<li> financials (purchases, income/expenditure, etc.)
+<li> academic (students, courses, classes, enrolment, etc.)
+</ul>
+<!--
+<p>
+It is in the process of being upgraded to the latest version of
+Campus Solutions (CS9).
+</p>
+-->
+<p>
+The current NSS database is separate from the UNSW Handbook,
+which records all of the official information related to course
+and program/degree requirements.
+To support on-line enrolment, NSS does represent some course
+information, such as pre-requisites, co-requisites and exclusions,
+as well as enrolment quotas.
+However, it maintains this information independently to the Handbook,
+which leads to potential inconsistency.
+Worse, NSS maintains no information at all about program/degree
+requirements, which means that students cannot use NSS to monitor
+their progress through their degree.
+</p>
+<p>
+The MyMyUNSW database aims to implement a superset of the contents
+of the NSS database, including:
+</p>
+<ul>
+<li> people: staff, students
+<li> infrastructure: buildings, rooms, facilities
+<li> organisation: faculties, schools, centres
+<li> academic: programs, streams, subjects, courses, classes
+</ul>
+<p>
+Note: there are two places in this schema where we deviate from
+current UNSW terminology. A <b>stream</b> is a new term that
+refers to what the current UNSW Handbook calls a <q>plan</q>
+or <q>specialisation</q>.
+Streams also encompass the collections of courses that comprise
+<q>majors</q> and <q>minors</q> in many degrees.
+Also, in our schema, we use the terms <b>subject</b> and
+<b>course</b> to talk about a unit of study (subject) and a
+particular offering of a subject in a given semester (course).
+UNSW confusingly calls both of these a <q>course</q>, although
+it also sometimes also uses the term <q>course offering</q>
+for the second.
+<p>
+The academic information includes subject pre/co-requisites and
+program/degree requirements, as well as all of the descriptive
+material from the UNSW handbook.
+This assemblage of information means that the MyMyUNSW database
+can be used as a basis for:
+</p>
+<ul>
+<li> on-line course and class enrolments
+<li> managing room allocation and time-tabling
+<li> monitoring progress through programs
+<li> producing the UNSW Handbook
+</ul>
+<p>
+Only the first, and part of the second, of these are provided
+by the current PeopleSoft system.
+</p>
+
+<h3>Data Model and Schema</h3>
+<p>
+This section aims to give an overview of the data model.
+It concentrates mainly on the entities and their relationships.
+The details of attributes are provided in the
+<a href="schema.sql">SQL schema</a>.
+</p>
+<p>
+Some considerations in the development of our data model:
+<ul>
+<li> there are two main kinds of <b>people</b> in the system: staff
+	and students; all people have certain basic information
+	associated with them (e.g. name); staff have additional
+	information related to their employment; students have
+	additional information related to the degree that they
+	are studying; there are also people who are neither staff
+	nor students that UNSW wants to record (e.g. members of
+	the University Council)
+<li> UNSW runs a number of teaching <b>terms</b> each year
+	(these are also called <q>sessions</q> or <q>semesters</q>)
+<li> a <b>subject</b> is a unit of study in a particular area
+	(e.g. introductory programming, database systems, etc.);
+	a subject is defined primarily by its syllabus
+<li> a <b>course</b> is a particular offering of a subject in
+	a particular teaching term; it has a course convener
+	(also called lecturer-in-charge), perhaps an enrolment
+	quota, and is associated with a number of classes
+<li> a <b>class</b> is a teaching activity at a scheduled time
+	in a scheduled place; examples of classes are lectures,
+	tutorials and labs; a class is associated with a course
+<li> a <b>degree</b> is an award given to a student who completes
+	a specified program of study
+<li> a <b>program</b> is a named program of study leading to
+	one or more degrees
+<li> a <b>stream</b> specifies the precise requirements for study
+	in a specific area; it is used to implement the notions of
+	<i>major</i> and <i>minor</i>
+<li> in a particular program, students choose at least one stream
+	from a range of possible streams (in a double degree, they
+	will choose two streams, one from each set of streams for
+	the constituent degrees); the program will specify precisely
+	what are the allowed/required combinations of streams
+<li> to satisfy the requirements of the program, a student must
+	satisfy the requirements of all the streams that they
+	enrol in from the program; in addition, there may be
+	requirements from the program itself (e.g. general
+	education, total units of credit completed, etc.)
+<li> there are several different types of requirements:
+<ul>
+<li> subject requirements (core subject, electives, limitations)
+<li> stream requirements (e.g. must take one from the BCom majors)
+<li> program requirements (e.g. must be enrolled in 3648 to take SENG1010)
+<li> UOC requirements (e.g. overall plan needs at least 144 UC)
+<li> WAM requirements (e.g. must have WAM of at least 65 for Hons)
+<li> stage requirements (e.g. must be in stage 2 of program to take COMP2 courses)
+<li> stream requirements (e.g. complete one major from a set of majors)
+<li> miscellaneous requirements (e.g. industrial training)
+</ul>
+<li> in specifying requirements, we frequently need to deal with sets
+	of academic objects (either programs or streams or subjects);
+	we call these (generically) <b>academic groupings</b>
+<li> we use <b>subject groups</b> in specifying subject requirements;
+	each subject group has a name (e.g. "level 3/4 COMP courses")
+	and an associated set of subjects
+<li> similarly for <b>stream groups</b> (e.g. "set of BA majors") and
+	<b>program groups</b> (e.g. "all programs offered by CSE")
+<li> a <b>subject requirement</b> specifies: a subject group, a number of
+	UOC associated with the group, whether this number is a minimum
+	or maximum requirement; this is flexible enough to allow us to
+	describe:
+	<ul>
+	<li> core requirements (group size 1, must complete 1 course from the group)
+	<li> alternatives (several related courses, must complete 1 of them)
+	<li> professional electives (set of courses from one area, must complete <i>k</i> of them)
+	<li> limitations (e.g. no more than 72 UC of level 1 courses)
+	</ul>
+<li> in terms of the ideas above, programs and streams are defined as
+	collections of requirements; a particular student must satisfy
+	all of the requirements before they are regarded as having
+	completed the program or stream
+<li> how to determine whether a student has satisfied requirements
+	depends on the type of requirement:
+	<ul>
+	<li> for UOC, use the course enrolment information
+	<li> for course requirements, use the course enrolment information
+	<li> for miscellaneous, must explicitly record that the student has met them<br>
+		(because there's no other data that will allow us to work it out)
+	</ul>
+<li> at any given time, each student is <b>enrolled</b> in one program, one or
+	more streams (associated with the program), and generally several
+	courses and classes within those courses; we need to record all four
+	kinds of enrolment
+<li> for enrolment in a program, it is useful to know when the student's
+	enrolment commenced, when it ended (if it has ended), and their
+	current status (e.g. active, on leave, etc.)
+<li> over their lifetime, students may enrol in several programs,
+	each with associated streams and courses
+<li> a <b>schedule</b> describes when in a stream particular courses should
+	be taken; in our terms, it will relate subject groups to streams and
+	associate specific (year,semester) combinations with them
+<li> sometimes, we wish to allow a student to <b>vary</b> from the standard
+	requirements of their degree plans;
+	there are three types of substitutions:
+	<ul>
+	<li> substitution: replace one course by another within a program
+	<li> advanced standing: get credit for a course from elsewhere (or
+		from a partly-completed UNSW degree) to
+		use in place of some course in a program
+	<li> exemption: get recognition for having studied a course
+		elsewhere so that this can be used as a pre-requisite
+		for further study at UNSW
+	</ul>
+</ul>
+<p>
+Treat the ER data model description below as an overview,
+and consult the <a href="schema.sql">SQL Schema</a> for full details
+on how the database is implemented.
+The ER diagrams below make a number of simplifications to the complete
+SQL schema: many attributes are omitted, some names are changed (e.g.
+entity names are singular here, but plural in the SQL schema).
+</p>
+<p>
+To make the presentation clearer, the data model is presented in a
+number of sections.
+</p>
+
+<h3 class="entity">People/Courses/Terms</h3>
+<p>Entities and relationships related to students/staff/courses/terms ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/person+course.png">
+</div>
+Comments:
+<ul>
+<li> the Person entity would clearly have much additional data associated
+	with it in a real implementation (contact details, etc.)
+<li> note that the use of <tt>Subjects.id</tt> rather than <tt>Subjects.code</tt>
+	as a primary key actually allows us to implement multiple versions
+	of a given subject; we also need to know the period over which the
+	particular version is relevant, and this is recorded in the subject
+	record
+<li> in reality, a course offering has a lot of other information
+	associated with it (e.g. enrolment quotas, assessment schemes,
+	classes); some of these appear in the database, some don't
+<li> the <i>n:m</i> relationship allows multiple staff to be associated with
+	the teaching of a given course offering; one of these staff is
+	required to be a course convener (this could have been implemented
+	via an extra field in the <tt>Courses</tt> table to force the above
+	constraint, but since it's also a Role, we decided to implement it
+	as such and do the constraint via a trigger)
+</ul>
+
+
+<h3 class="entity">Programs/Streams/Degrees</h3>
+<p>Entities related to programs/streams/degrees ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/academic-objects.png">
+</div>
+<p>... and relationships between them ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/prog+stream-relns.png">
+</div>
+Comments:
+<ul>
+<li> here, we show minimal attributes for the Program, Degree and Stream entities;
+	see the schema for full details
+<li> a program leads to one or more degrees (e.g. BSc, BE/BCom)
+<li> a degree occurs in at least one program (e.g. straight BE, BE/BCom, BE/BSc)
+<li> streams may be used in several programs (e.g. BE component of combined degrees)
+<li> specific requirements may also be used in several plans
+</ul>
+
+<h3 class="entity">Requirements</h3>
+<p>Entities and relationships related to requirements ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/requirements.png">
+</div>
+Comments:
+<ul>
+<li> every requirement is either a
+<ul>
+<li> <em>UOC</em> ... student must meet minimum/maximum UOC limits
+<li> <em>stage</em> ... student must be in specified stage of program
+<li> <em>WAM</em> ... student must meet minimum/maximum WAM limits
+<li> <em>inProgram</em> ... student is currently enrolled in one of a set of programs
+<li> <em>inStream</em> ... student is currently enrolled in one of a set of streams
+<li> <em>inSubject</em> ... student is currently enrolled in one of a set of subjects
+<li> <em>doneProgram</em> ... student has completed requirements of program(s)
+<li> <em>doneStream</em> ... student has completed requirements of stream(s)
+<li> <em>doneSubject</em> ... student has successfully completed subject(s) 
+<li> <em>compound</em> ... combines other requirements via boolean operator
+<li> <em>miscellaneous</em> ... other non-computable requirement (e.g. industrial training)
+</ul>
+<li> many of the requirement types refer to a set of academic objects
+	(e.g. set of subjects in an elective group); such sets are
+	represented by the <tt>AcadObjectGroups</tt> table
+<li> a requirement can be negated via a flag in the requirement record
+<li> requirements may specify minimum and maximum values (see examples above)
+<li> using min, max and academic object sets allows you express requirements like
+<ul>
+<li> must complete between 24 and 36 UOC from COMP3* courses (subject group)
+<li> must complete one major from the BA majors (stream group)
+<li> must be enrolled in a CSE degree (program group)
+</ul>
+<li> if a requirement is really a logical combination of other requirements,
+	it can be expressed as a compound requirement; a compound requirement
+	combines a set of requirements via logical AND or logical OR;
+	compound requirements can be nested
+<li> note that the sets of requirements for Programs, Streams amd Subject
+	pre-requisites are implicitly conjunctive (i.e. you need to satisfy
+	all of them before you have completed the Program or Stream or met
+	the pre-requisite requirement for the Subject)
+<li> miscellaneous requirements pick up all of the other non-course-related
+	requirements that exist in various degrees (e.g. industrial training
+	for Engineers); since there are no enrolments records or other kinds
+	of records to check that these were completed, we need an explicit
+	link between the student and the requirement to indicate this
+</ul>
+
+<h3 class="entity">Academic Object Groups</h3>
+<p>Groups of academic objects that are central to the definition of requirements ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/academic-object-groups.png">
+</div>
+<br/>
+<ul>
+<li> an academic object group (<i>AcObjGroup</i>) specifies a set of
+	academic objects of one type (e.g. a set of streams,
+	set of courses, etc.)
+<li> each <i>AcObjGroup</i> has a name which describes its purpose and is
+	used for looking up groups when programs and streams are
+	being defined
+<li> the members of an <i>AcObjGroup</i> may be defined in three ways:
+<ul>
+<li> by enumeration (explicitly noting each member of the group)
+<li> by giving patterns to identify the members (e.g. <tt>COMP3###</tt>)
+<li> by giving an SQL query to lookup the members and return a set of IDs
+</ul>
+<li> in the case of a set of requirements, you can also specify the logic
+	of how the members are defined (conjunction or disjunction)
+</ul>
+<p>
+Note: in these patterns, a '#' is like a '_' in an SQL <tt>like</tt> pattern
+or a '.' in a regular expression pattern.
+</p>
+<p>
+Both <tt>enumerated</tt> and <tt>pattern</tt> groups are defined using
+a definition which is comma-separated list of items. The difference is
+that <tt>pattern</tt> groups may have items like <tt>COMP3###</tt>, which
+matches any course with a code starting with "<tt>COMP3</tt>", while an
+<tt>enumerated</tt> group is simply a list of course or stream codes.
+One exception is that alternatives may be specified in an enumerated
+list as <tt>{MATH1131;MATH1141}</tt>; this means that a student can
+take either MATH1131 or MATH1141 to satisfy the group requirements.
+</p>
+
+<h3 class="entity">Enrolment</h3>
+<p>Relationships for various kinds of enrolment ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/enrolments.png">
+</div>
+Comments:
+<ul>
+<li> students initially start at UNSW by enrolling in a program
+<li> once enrolled, they choose a specific stream (or streams) to study
+	within that program
+<li> this requires them to enrol in courses, and they generally enrol in
+	one or more classes in the course (note that NSS uses enrolment
+	in the lecture class as the way of indicating that a student is
+	enrolled in a course; our schema does not do this)
+<li> all these notions of <q>enrolment</q> have different kinds of information
+	associated with them
+<li> we have used total participation for Students-EnrollIn-Program
+	to indicate that they must be enrolled in at least one program;
+	it's an n:m relationship because, over time, they may enrol in
+	other programs (e.g. complete their undergraduate degree and
+	then later do a coursework masters degree)
+<li> note that the mark alone is not sufficient to determine whether
+	a student has successfully completed a course; they need a
+	passing grade to ensure this (the set of grades indicating a
+	pass includes SY, PC, PS, CR, DN, HD ... there is also a PT
+	grade which is no longer used but is included to allow us to
+	deal with old data)
+</ul>
+
+<h3 class="entity">Variations</h3>
+<p><b>Note</b>: for this assignment we will be ignoring variations.
+We include their schema for the sake of completeness.
+</p>
+<p>Variations of meeting requirements within programs ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/variations.png">
+</div>
+Comments:
+<ul>
+<li> the purpose of a variation is to indicate that a student has
+	effectively completed one course at UNSW, without necessarily
+	having enrolled in and passed that course
+<li> there are three kinds of variation: substitution, advanced standing,
+	exemption
+<li> a substitution might be used to replace a core course in a plan
+	by some other course if the core course is not available
+<li> advanced standing gives credit towards a degree, based on study towards
+	a different degree either at UNSW or elsewhere (typically, advanced
+	standing is only granted when the degree containing the
+	course was not completed)
+<li> including courses from other institutions means that we need a
+	representation for them; we have used a very simple representation
+<li> finally, exemptions allow us to record that a student has some
+	specific background knowledge (to use as a pre-requisite for
+	some other course); an exemption does not confer credit
+	towards a degree, however
+</ul>
+
+<h3 class="entity">Organisational Units</h3>
+<p><b>Note</b>: for this assignment, we are largely ignoring
+organisational units, except as owners of subjects.
+</p>
+<p>Units (e.g. Faculties, Schools, Departments) within UNSW ...</p>
+<div align="center">
+<img src="Pic/mymyunsw/orgunits.png">
+</div>
+Comments:
+<ul>
+<li> units are nested (e.g. the CSE school is in the Engineering Faculty which
+is within UNSW)
+<li> this nesting is handled via a <tt>UnitGroups</tt> table
+<li> there is a meta-orgunit <tt>UNSW</tt> which all of the faculties are
+members of
+<li> since we don't have staff in the database, there's no need for affiliations
+<li> the n:m relationship between staf:roles:orgunits means that a staff member
+could be affiliated with several orgiunits or could have multiple roles within
+a single orgunit
+</ul>
+
+<h3 class="entity">Rooms and Buildings</h3>
+<p><b>Note</b>: for this assignment we will be ignoring rooms
+and buildings.
+We include their schema for the sake of completeness.
+</p>
+<p>Places to hold classes, offices, etc.</p>
+<div align="center">
+<img src="Pic/mymyunsw/rooms+buildings.png">
+</div>
+
+<h3>SQL Schema</h3>
+<p>
+We have developed an <a href="schema.sql">SQL schema</a>
+based on the above data model.
+With the above background, you are now in a good position
+to examine this schema, keeping in mind that the schema does
+not follow precisely what has been specified above in all cases.
+</p>
+
+<h3>Database Contents</h3>
+<p>
+The student/course/enrolment part of the database has been populated
+using real data which was transformed to make it anonymous
+(i.e. names, marks, enrolments changed to protect the innocent).
+The subject/program part of the database was populated from
+enrolment data.
+The requirements part will be populated from data in the
+ECLIPS database and the Handbook.
+The class data would have been populated using data from the UNSW
+timetable site, if we were including classes.
+</p>
+<p>
+For this assignment,
+we have decided to focus on students enrolled in degrees offered by
+CSE (e.g. Computer Science, Software Engineering),
+and so only rules relevant to these degrees are included,
+and only enrolments by CSE students are included.
+</p>
+<p>
+Note that the task of populating such a large database is extremely
+time-consuming and so many parts of the database are unpopulated or
+populated only very <q>thinly</q>.
+Some parts have data that is close to reality, while others have data
+that is a pale shadow of reality.
+In order to get a feeling for what is actually present, you must spend
+some time exploring the database when it is eventually populated.
+</p>
+
+</div></body>
+</html>
